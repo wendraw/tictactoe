@@ -1,0 +1,141 @@
+<style>
+    .cell {
+        width: 100px;
+        height: 100px;
+        background-color: green;
+        display: inline-block;
+        vertical-align: middle;
+        border: solid 1px white;
+
+        line-height: 100px;
+        text-align: center;
+        font-size: 50px;
+    }
+
+    /* .cell {
+        width: 100px;
+        height: 100px;
+        background-color: green;
+        border: solid 1px white;
+
+        text-align: center;
+        line-height: 100px;
+        font-size: 50px;
+    }
+
+    #board {
+        display: flex;
+        flex-wrap: wrap;
+        width: 310px;
+    } */
+</style>
+
+<div id="board"></div>
+
+<script>
+    let pattern = [
+        2, 0, 0,
+        0, 1, 0,
+        0, 0, 0
+    ];
+    let color = 1;
+
+    function show(pattern) {
+        let board = document.getElementById('board');
+        board.innerHTML = "";
+        for (let y = 0; y < 3; y++) {
+            for (let x = 0; x < 3; x++) {
+                let cell = document.createElement('div');
+                cell.classList.add("cell")
+                cell.innerHTML = pattern[y * 3 + x] === 2 ? "❌" :
+                    pattern[y * 3 + x] === 1 ? "⭕️" : "";
+                cell.addEventListener('click', () => move(x, y));
+                board.appendChild(cell);
+            }
+            board.appendChild(document.createElement("br"));
+        }
+    }
+    show(pattern);
+
+    function move(x, y) {
+        if (pattern[y * 3 + x] > 0) return;
+        pattern[y * 3 + x] = color;
+        show(pattern);
+        if (check(pattern, color)) {
+            alert(`${color === 2 ? "❌" : "⭕️"} is winner`);
+        }
+        color = 3 - color;
+        if (willWin(pattern, color)) {
+            console.log(`${color === 2 ? "❌" : "⭕️"} will win!`);
+        }
+    }
+
+    //// 这里还可以加上 x y，还可以抽象方向，简化代码
+    function check(pattern, color) {
+
+        for (let y = 0; y < 3; y++) {
+            let win = true;
+            for (let x = 0; x < 3; x++) {
+                if (pattern[y * 3 + x] !== color) {
+                    win = false;
+                    break;
+                }
+            }
+            if (win) return true;
+        }
+
+        for (let y = 0; y < 3; y++) {
+            let win = true;
+            for (let x = 0; x < 3; x++) {
+                if (pattern[x * 3 + y] !== color) {
+                    win = false;
+                    break;
+                }
+            }
+            if (win) return true;
+        }
+
+        {   // 正对角线
+            let win = true;
+            for (let i = 0; i < 3; i++) {
+                if (pattern[i * 3 + i] !== color) {
+                    win = false;
+                    break;
+                }
+            }
+            if (win) return true;
+        }
+
+        {   // 反对角线
+            let win = true;
+            for (let i = 0; i < 3; i++) {
+                if (pattern[i * 3 + 2 - i] !== color) {
+                    win = false;
+                    break;
+                }
+            }
+            if (win) return true;
+        }
+
+        return false;
+    }
+
+    function willWin(pattern, color) {
+        for (let y = 0; y < 3; y++) {
+            for (let x = 0; x < 3; x++) {
+                // 有棋子就跳过
+                if (pattern[y * 3 + x] !== 0) continue;
+
+                let tmp = clone(pattern);
+                tmp[y * 3 + x] = color;
+
+                if (check(tmp, color)) return true;
+            }
+        }
+        return false;
+    }
+
+    function clone(pattern) {
+        return Object.create(pattern);
+    }
+</script>

@@ -1,0 +1,50 @@
+<style>
+    .cell {
+        width: 100px;
+        height: 100px;
+        background-color: green;
+        display: inline-block;
+        vertical-align: middle;
+        border: solid 1px white;
+
+        line-height: 100px;
+        text-align: center;
+        font-size: 50px;
+    }
+</style>
+
+<div id="board"></div>
+
+<script>
+    let pattern = [
+        2, 0, 0,
+        0, 1, 0,
+        0, 0, 0
+    ];
+    let color = 1;
+
+    function show(pattern) {
+        let board = document.getElementById('board');
+        board.innerHTML = "";
+        for (let y = 0; y < 3; y++) {
+            for (let x = 0; x < 3; x++) {
+                let cell = document.createElement('div');
+                cell.classList.add("cell")
+                cell.innerHTML = pattern[y * 3 + x] === 2 ? "❌" :
+                    pattern[y * 3 + x] === 1 ? "⭕️" : "";
+                cell.addEventListener('click', () => move(x, y));
+                board.appendChild(cell);
+            }
+            board.appendChild(document.createElement("br"));
+        }
+    }
+    show(pattern);
+
+    function move(x, y) {
+        if (pattern[y * 3 + x] > 0) return;
+
+        pattern[y * 3 + x] = 3 - color;
+        color = 3 - color;
+        show(pattern);
+    }
+</script>
